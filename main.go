@@ -2,6 +2,8 @@ package main
 
 import (
 	"os"
+
+	"github.com/inabajunmr/kimera-chang/cli"
 )
 
 func main() {
