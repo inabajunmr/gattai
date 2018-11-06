@@ -1,0 +1,33 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.11.1
+        environment:
+          GO111MODULE: "on"      
+    working_directory: /go/src/github.com/inabajunmr/kimera-chang
+    environment:
+      TEST_RESULTS: /tmp/test-results
+    steps:
+      - checkout
+      - run: mkdir -p $TEST_RESULTS
+      - restore_cache:
+          keys:
+            - v1-pkg-cache
+      - run:
+          name: Run unit tests
+          command: |
+            make test | tee ${TEST_RESULTS}/go-test.out
+      - run: go get github.com/pierrre/gotestcover
+      - run: gotestcover -coverprofile=coverage.txt ./...
+      - run: bash <(curl -s https://codecov.io/bash)            
+      - save_cache:
+          key: v1-pkg-cache
+          paths:
+            - "/go/pkg"
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: raw-test-output
+      - store_test_results:
+          path: /tmp/test-results
+
