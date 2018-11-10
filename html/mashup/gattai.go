@@ -1,6 +1,7 @@
 package mashup
 
 import (
+	"fmt"
 	"math/rand"
 	"net/http"
 	"os"
@@ -62,4 +63,11 @@ func Gattai(url1 string, url2 string) string {
 
 	return val
 
+}
+
+func extract(s *goquery.Selection) {
+	// get depth and node index
+	// get random node and remove it
+	a := goquery.NewDocumentFromNode(s.Nodes[0]).Selection
+	fmt.Println(a)
 }
