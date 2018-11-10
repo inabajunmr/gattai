@@ -9,7 +9,7 @@ import (
 
 func Run(args []string) int {
 	fmt.Println(args)
-	if len(args) != 2 {
+	if len(args) != 3 {
 		fmt.Println("error")
 		os.Exit(1)
 	}
@@ -22,6 +22,6 @@ func Run(args []string) int {
 	}
 	defer file.Close()
 
-	file.Write(([]byte)(mashup.Gattai(args[0], args[0])))
+	file.Write(([]byte)(mashup.Gattai(args[1], args[2])))
 	return 0
 }

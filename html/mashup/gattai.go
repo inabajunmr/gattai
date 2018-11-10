@@ -20,9 +20,9 @@ func Gattai(url1 string, url2 string) string {
 		os.Exit(1)
 	}
 
-	resp2, err := http.Get(url1)
+	resp2, err := http.Get(url2)
 	if err != nil {
-		print("Can not access to " + url1)
+		print("Can not access to " + url2)
 		print(err)
 		os.Exit(1)
 	}
@@ -57,10 +57,9 @@ func Gattai(url1 string, url2 string) string {
 	body1 := doc1.Find("body")
 	body2 := doc2.Find("body")
 
-	result.Find("body").AppendSelection(body1)
-	result.Find("body").AppendSelection(body2)
-
+	result.Find("body").AppendSelection(body1).AppendSelection(body2)
 	val, err := result.Html()
+
 	return val
 
 }

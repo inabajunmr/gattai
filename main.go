@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/inabajunmr/kimera-chang/cli"
+	"github.com/inabajunmr/gattai/cli"
 )
 
 func main() {
