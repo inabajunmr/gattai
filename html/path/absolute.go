@@ -11,11 +11,18 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-// ModifyToAbsoluteURL from relative path in html string
-func ModifyToAbsoluteURL(html io.Reader, url string) string {
-	// load html
-	// get elements with url
-	// modify all
+var targets = []struct {
+	tag string
+	key string
+}{
+	{"a", "href"},
+	{"img", "src"},
+	{"link", "href"},
+}
+
+// ModifyToAbsoluteURLInHTML from relative path in html string
+func ModifyToAbsoluteURLInHTML(html io.Reader, url string) string {
+
 	doc, err := goquery.NewDocumentFromReader(html)
 
 	if err != nil {
@@ -24,22 +31,32 @@ func ModifyToAbsoluteURL(html io.Reader, url string) string {
 	}
 
 	// from relative to absolute
-	doc.Find("a").Each(func(i int, s *goquery.Selection) {
-		_, exist := s.Attr("href")
-		if exist {
+	for _, tag := range targets {
+		doc.Find(tag.tag).Each(func(i int, s *goquery.Selection) {
+			val, exist := s.Attr(tag.key)
+			if exist {
+				s.SetAttr(tag.key, modifyToAbsoluteURL(val, url))
+			}
+		})
 
-		}
+	}
+	result, err := doc.Html()
 
-	})
+	if err != nil {
+		fmt.Println("Something wrong.")
+		os.Exit(1)
+	}
 
-	return ""
+	return result
 }
 
 func modifyToAbsoluteURL(targeturl string, sourceurl string) string {
 	tu, err := url.Parse(targeturl)
 	if err != nil {
-		// TODO
+		fmt.Println("Something wrong.")
+		os.Exit(1)
 	}
+
 	if len(tu.Host) != 0 {
 		// this is already absolute path
 		return targeturl
@@ -47,7 +64,8 @@ func modifyToAbsoluteURL(targeturl string, sourceurl string) string {
 
 	su, err := url.Parse(sourceurl)
 	if err != nil {
-		// TODO
+		fmt.Println("Something wrong.")
+		os.Exit(1)
 	}
 
 	if !strings.HasPrefix(tu.Path, "/") {
