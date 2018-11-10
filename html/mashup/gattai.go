@@ -57,6 +57,8 @@ func Gattai(url1 string, url2 string) string {
 	body1 := doc1.Find("body")
 	body2 := doc2.Find("body")
 
+	// TODO Using body1 and put into body2 lowermost element
+
 	rbody := result.Find("body")
 
 	for {
