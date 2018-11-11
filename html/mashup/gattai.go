@@ -1,6 +1,7 @@
 package mashup
 
 import (
+	"fmt"
 	"math/rand"
 	"net/http"
 	"os"
@@ -50,33 +51,37 @@ func Gattai(url1 string, url2 string) string {
 
 	head1 := doc1.Find("head").Children()
 	head2 := doc2.Find("head").Children()
+
 	result.Find("head").AppendSelection(head1)
 	result.Find("head").AppendSelection(head2)
 
-	// body
 	body1 := doc1.Find("body")
 	body2 := doc2.Find("body")
 
-	// TODO Using body1 and put into body2 lowermost element
-
 	rbody := result.Find("body")
+	rbody = rbody.AppendSelection(body1)
 
+	var r *goquery.Selection
 	for {
-		s1 := extract(body1.Children())
-		s2 := extract(body2.Children())
-
-		if s1 == nil && s2 == nil {
-			break
-		}
-
-		if s1 != nil {
-			rbody = rbody.AppendSelection(s1)
-		}
+		s2 := extract(body2)
 
 		if s2 != nil {
-			rbody = rbody.AppendSelection(s2)
-		}
+			html, _ := s2.Html()
+			if len(html) == 0 {
+				continue
+			}
 
+			r = randomNode(rbody)
+			html, _ = r.Html()
+			if len(html) == 0 {
+				continue
+			}
+
+			r.AppendSelection(s2)
+
+		} else {
+			break
+		}
 	}
 
 	val, err := result.Html()
@@ -85,25 +90,27 @@ func Gattai(url1 string, url2 string) string {
 
 }
 
-func extract(s *goquery.Selection) *goquery.Selection {
-	if len(s.Nodes) == 0 {
-		return nil
-	}
+func randomNode(s *goquery.Selection) *goquery.Selection {
 
 	rand.Seed(time.Now().UnixNano())
 
-	current := s
-	for {
-		index := rand.Intn(len(current.Nodes))
-		node := current.Nodes[index]
-		current = goquery.NewDocumentFromNode(node).Children()
+	all := s.Find("*")
+	length := all.Length()
 
-		// TODO random hierarchy
-		v := rand.Intn(20)
-		if len(current.Nodes) == 0 || v == 0 {
-			result := goquery.NewDocumentFromNode(node).Clone()
-			goquery.NewDocumentFromNode(node).Remove()
-			return result
-		}
+	fmt.Println("length:", length)
+
+	if length == 0 {
+		return nil
 	}
+
+	index := rand.Intn(length)
+	return s.FindNodes(all.Nodes[index])
+
+}
+
+func extract(s *goquery.Selection) *goquery.Selection {
+	if randomNode(s) == nil {
+		return nil
+	}
+	return randomNode(s).Remove()
 }
