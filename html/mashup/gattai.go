@@ -1,7 +1,6 @@
 package mashup
 
 import (
-	"fmt"
 	"math/rand"
 	"net/http"
 	"os"
@@ -96,8 +95,6 @@ func randomNode(s *goquery.Selection) *goquery.Selection {
 
 	all := s.Find("*")
 	length := all.Length()
-
-	fmt.Println("length:", length)
 
 	if length == 0 {
 		return nil

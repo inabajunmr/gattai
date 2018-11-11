@@ -8,13 +8,10 @@ import (
 )
 
 func Run(args []string) int {
-	fmt.Println(args)
 	if len(args) != 3 {
-		fmt.Println("error")
+		fmt.Println("You must specify 2 urls as arguments.")
 		os.Exit(1)
 	}
-
-	fmt.Println("call")
 
 	file, err := os.Create("./gattai.html")
 	if err != nil {
